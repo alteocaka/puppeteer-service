@@ -17,15 +17,20 @@ app.post("/render", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      headless: "new", // Puppeteer 20+ recommended option
+      headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath:
-        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      executablePath: "/usr/bin/chromium", // or try leaving this out if it still fails
     });
 
     const page = await browser.newPage();
+
+    // Log the raw HTML size and preview
+    console.log("Rendering HTML (length):", html.length);
+    console.log("HTML preview:", html.slice(0, 300), "...");
+
     await page.setViewport({ width: 1080, height: 1350 });
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30000 });
+
     const screenshot = await page.screenshot({ type: "png" });
 
     await browser.close();
@@ -33,8 +38,10 @@ app.post("/render", async (req, res) => {
     res.set("Content-Type", "image/png");
     res.send(screenshot);
   } catch (err) {
-    console.error("Error generating screenshot:", err);
-    res.status(500).send("Failed to generate screenshot");
+    console.error("🛑 Error generating screenshot:", err.stack || err);
+    res
+      .status(500)
+      .send("Failed to generate screenshot: " + (err.message || err));
   }
 });
 
