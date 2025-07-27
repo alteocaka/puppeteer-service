@@ -39,4 +39,4 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 EXPOSE 3000
 
 # ── Start the service
-CMD ["node", "index.js"]
+CMD ["node", "render-service.js"]
