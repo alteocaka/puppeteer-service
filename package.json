@@ -1,0 +1,30 @@
+{
+  "name": "puppeteer-service",
+  "version": "1.0.0",
+  "description": "A simple Puppeteer service to convert HTML to image",
+  "main": "render-service.js",
+  "scripts": {
+    "start": "node render-service.js",
+    "dev": "nodemon render-service.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "puppeteer": "^24.14.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.2.5"
+  },
+  "keywords": [
+    "puppeteer",
+    "screenshot",
+    "html-to-image",
+    "express"
+  ],
+  "author": "Alteo Caka",
+  "license": "MIT"
+}

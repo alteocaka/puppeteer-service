@@ -1,0 +1,29 @@
+# dependencies
+/node_modules/
+
+# debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env files
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# logs
+logs/
+*.log
+
+# OS generated files
+Thumbs.db
+
+# coverage
+coverage/
+
+# build output
+dist/
+build/

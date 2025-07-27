@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: screenshot-service
+    env: docker # use your Dockerfile
+    dockerfilePath: Dockerfile
+    plan: free # Free Web Service
+    region: oregon # pick any of Render’s supported regions
+    autoDeploy: true # redeploy on every git push
+    ports:
+      - 3000
