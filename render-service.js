@@ -31,7 +31,9 @@ app.post("/render", async (req, res) => {
     await page.setViewport({ width: 1080, height: 1350 });
     await page.setContent(html, { waitUntil: "networkidle0", timeout: 30000 });
 
-    const screenshot = await page.screenshot({ type: "png" });
+    const screenshot = (await page.screenshot({ type: "png" })).toString(
+      "base64"
+    );
 
     await browser.close();
 
