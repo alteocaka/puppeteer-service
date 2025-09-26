@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node render-service.js",
     "dev": "nodemon render-service.js",
+    "test": "node test-service.js",
+    "test:curl": "./test-curl.sh",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

@@ -5,14 +5,29 @@ const puppeteer = require("puppeteer");
 const app = express();
 const port = 3000;
 
-// Allow larger payloads (HTML can be long)
-app.use(bodyParser.text({ type: "*/*", limit: "5mb" }));
+// Allow larger payloads (HTML can be long) with better content-type handling
+app.use(bodyParser.text({ 
+  type: ["text/html", "text/plain", "application/json"], 
+  limit: "5mb" 
+}));
 
 app.post("/render", async (req, res) => {
-  const html = req.body;
+  let html = req.body;
 
   if (!html) {
     return res.status(400).send("No HTML provided");
+  }
+
+  // Handle JSON input format and extract HTML from it
+  try {
+    const parsed = JSON.parse(html);
+    if (parsed.html) {
+      html = parsed.html;
+      console.log("Extracted HTML from JSON input");
+    }
+  } catch (e) {
+    // Not JSON, use as-is
+    console.log("Using raw HTML input");
   }
 
   try {
@@ -29,7 +44,33 @@ app.post("/render", async (req, res) => {
     console.log("HTML preview:", html.slice(0, 300), "...");
 
     await page.setViewport({ width: 1080, height: 1350 });
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 30000 });
+    
+    // Improved wait conditions - use domcontentloaded instead of networkidle0
+    await page.setContent(html, { 
+      waitUntil: "domcontentloaded", 
+      timeout: 30000 
+    });
+    
+    // Add additional wait for fonts/images to load
+    await page.waitForTimeout(1000);
+    
+    // Check if content actually loaded and add debugging
+    const bodyText = await page.evaluate(() => document.body.innerText);
+    const bodyHTML = await page.evaluate(() => document.body.innerHTML);
+    console.log("Body content length:", bodyText.length);
+    console.log("Body HTML length:", bodyHTML.length);
+    
+    // If no content loaded, try waiting a bit more
+    if (bodyText.length === 0 && bodyHTML.length < 100) {
+      console.log("⚠️  No content detected, waiting additional 2 seconds...");
+      await page.waitForTimeout(2000);
+      
+      // Check again
+      const retryBodyText = await page.evaluate(() => document.body.innerText);
+      const retryBodyHTML = await page.evaluate(() => document.body.innerHTML);
+      console.log("Retry - Body content length:", retryBodyText.length);
+      console.log("Retry - Body HTML length:", retryBodyHTML.length);
+    }
 
     const screenshot = (await page.screenshot({ type: "png" })).toString(
       "base64"

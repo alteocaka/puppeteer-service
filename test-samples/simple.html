@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Test Successful!</h1>
+        <p>This is a simple HTML test for the Puppeteer service.</p>
+        <p>Generated at: <span id="timestamp"></span></p>
+    </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
