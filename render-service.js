@@ -110,7 +110,7 @@ app.post("/render", async (req, res) => {
     });
     
     // Add additional wait for fonts/images to load
-    await page.waitForTimeout(1000);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Check if content actually loaded and add debugging
     const bodyText = await page.evaluate(() => document.body.innerText);
@@ -121,7 +121,7 @@ app.post("/render", async (req, res) => {
     // If no content loaded, try waiting a bit more
     if (bodyText.length === 0 && bodyHTML.length < 100) {
       console.log("⚠️  No content detected, waiting additional 2 seconds...");
-      await page.waitForTimeout(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Check again
       const retryBodyText = await page.evaluate(() => document.body.innerText);
