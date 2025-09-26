@@ -31,11 +31,69 @@ app.post("/render", async (req, res) => {
   }
 
   try {
-    const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath: "/usr/bin/chromium", // or try leaving this out if it still fails
-    });
+    // Try different Chromium paths for different environments
+    const chromiumPaths = [
+      "/usr/bin/chromium",           // Docker/Ubuntu
+      "/usr/bin/chromium-browser",   // Alternative Ubuntu path
+      "/usr/bin/google-chrome",      // Google Chrome
+      "/usr/bin/google-chrome-stable", // Google Chrome stable
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", // macOS
+      process.env.PUPPETEER_EXECUTABLE_PATH, // Environment variable
+    ].filter(Boolean);
+
+    let browser;
+    let lastError;
+
+    // Try to launch with different executable paths
+    for (const executablePath of chromiumPaths) {
+      try {
+        console.log(`🔍 Trying Chromium at: ${executablePath}`);
+        browser = await puppeteer.launch({
+          headless: "new",
+          args: [
+            "--no-sandbox", 
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--single-process",
+            "--disable-gpu"
+          ],
+          executablePath: executablePath,
+        });
+        console.log(`✅ Successfully launched Chromium at: ${executablePath}`);
+        break;
+      } catch (error) {
+        console.log(`❌ Failed to launch Chromium at: ${executablePath} - ${error.message}`);
+        lastError = error;
+        continue;
+      }
+    }
+
+    // If all paths failed, try without specifying executablePath
+    if (!browser) {
+      try {
+        console.log(`🔍 Trying default Puppeteer Chromium...`);
+        browser = await puppeteer.launch({
+          headless: "new",
+          args: [
+            "--no-sandbox", 
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--single-process",
+            "--disable-gpu"
+          ],
+        });
+        console.log(`✅ Successfully launched default Puppeteer Chromium`);
+      } catch (error) {
+        console.log(`❌ Failed to launch default Puppeteer Chromium - ${error.message}`);
+        throw new Error(`Could not launch Chromium. Last error: ${lastError?.message || error.message}`);
+      }
+    }
 
     const page = await browser.newPage();
 

@@ -31,7 +31,7 @@ RUN npm install --production
 # ── Copy source
 COPY . .
 
-# ── Tell Puppeteer to use the system Chromium
+# ── Tell Puppeteer to use the system Chromium (but allow fallback)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
