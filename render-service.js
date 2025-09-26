@@ -130,9 +130,7 @@ app.post("/render", async (req, res) => {
       console.log("Retry - Body HTML length:", retryBodyHTML.length);
     }
 
-    const screenshot = (await page.screenshot({ type: "png" })).toString(
-      "base64"
-    );
+    const screenshot = await page.screenshot({ type: "png" });
 
     await browser.close();
 
